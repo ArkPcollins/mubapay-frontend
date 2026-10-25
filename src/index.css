@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tokens (RGB triplets so Tailwind can apply opacity). Contrast checked for WCAG AA on paper/surface. */
+:root {
+  --ink: 27 42 74;          /* #1B2A4A indigo ink — text & brand */
+  --paper: 246 248 247;     /* #F6F8F7 cool paper */
+  --surface: 255 255 255;
+  --line: 214 222 219;      /* #D6DEDB */
+  --muted: 82 96 112;       /* #526070 secondary text (AA on paper) */
+  --palm: 14 124 102;       /* #0E7C66 palm — primary actions */
+  --palm-soft: 223 242 236;
+  --palm-ink: 255 255 255;
+  --kola: 156 118 22;       /* #9C7616 brass — savings milestones only */
+  --kola-soft: 248 239 214;
+  --danger: 180 35 24;
+  --danger-soft: 253 233 231;
+  --warn: 160 72 6;
+  --warn-soft: 254 240 222;
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --ink: 231 239 236;
+  --paper: 15 27 31;        /* #0F1B1F deep slate-teal */
+  --surface: 22 38 43;
+  --line: 47 69 74;
+  --muted: 160 178 182;
+  --palm: 47 181 146;       /* lighter palm for dark contrast */
+  --palm-soft: 21 64 55;
+  --palm-ink: 6 30 24;
+  --kola: 222 184 92;
+  --kola-soft: 64 50 18;
+  --danger: 248 113 100;
+  --danger-soft: 72 26 22;
+  --warn: 245 166 80;
+  --warn-soft: 70 42 14;
+  color-scheme: dark;
+}
+
+html { background: rgb(var(--paper)); }
+body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: 'tnum' 0; }
+h1, h2, h3 { @apply font-display text-ink; letter-spacing: -0.01em; }
+.tnum { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid rgb(var(--palm)); outline-offset: 2px; border-radius: 6px; }
+a { text-underline-offset: 3px; }
+::selection { background: rgb(var(--palm-soft)); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+@layer components {
+  .field { @apply w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-palm focus:outline-none focus:ring-2 focus:ring-palm/30 disabled:opacity-60; min-height: 44px; }
+  .label { @apply mb-1.5 block text-sm font-semibold text-ink; }
+  .hint { @apply mt-1 text-sm text-muted; }
+  .panel { @apply rounded-xl border border-line bg-surface; }
+  .page-title { @apply font-display text-2xl font-bold sm:text-3xl; }
+  .link { @apply font-semibold text-palm underline decoration-palm/40 hover:decoration-palm; }
+}
+
+/* Leaflet container respects theme */
+.leaflet-container { font: inherit; border-radius: 14px; }
+[data-theme='dark'] .leaflet-tile { filter: brightness(0.75) contrast(1.1) saturate(0.8); }
