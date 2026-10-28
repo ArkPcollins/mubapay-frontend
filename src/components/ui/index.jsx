@@ -1,4 +1,4 @@
-import { forwardRef, useId } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, CheckCircle2, Clock, Info, Loader2, XCircle, CircleDot, Inbox } from 'lucide-react';
 import { humanize, naira } from '../../lib/format';
@@ -56,10 +56,50 @@ export function Field({ label, hint, error, children, required, className }) {
   );
 }
 
-export const Input = forwardRef(function Input({ label, hint, error, required, className, ...props }, ref) {
+export const Input = forwardRef(function Input({ label, hint, error, required, className, type, ...props }, ref) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  // If it's a password type, dynamically flip between 'text' and 'password'
+  const isPasswordType = type === 'password';
+  const computedType = isPasswordType && showPassword ? 'text' : type;
+
   return (
     <Field label={label} hint={hint} error={error} required={required} className={className}>
-      {(a) => <input ref={ref} className="field" required={required} {...a} {...props} />}
+      {(a) => (
+        <div style={{ position: 'relative', width: '100%' }}>
+          <input 
+            ref={ref} 
+            type={computedType} 
+            className="field" 
+            required={required} 
+            {...a} 
+            {...props} 
+            style={{ paddingRight: isPasswordType ? '2.5rem' : undefined, ...props.style }}
+          />
+          
+          {isPasswordType && (
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              style={{
+                position: 'absolute',
+                right: '0.75rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                color: '#666',
+                userSelect: 'none'
+              }}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          )}
+        </div>
+      )}
     </Field>
   );
 });

@@ -2,10 +2,13 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { get, post } from './api';
 import { connectSocket, disconnectSocket } from './socket';
+import { useNavigate } from 'react-router-dom';
 
 const SessionCtx = createContext(null);
 
 export function SessionProvider({ children }) {
+  const navigate = useNavigate();
+
   const qc = useQueryClient();
   const me = useQuery({ queryKey: ['me'], queryFn: () => get('/auth/me').then((r) => r.user).catch((e) => (e.status === 401 || e.status === 403 ? null : Promise.reject(e))), staleTime: 60e3, retry: false });
   const meta = useQuery({ queryKey: ['meta'], queryFn: () => get('/meta'), staleTime: 5 * 60e3 });
@@ -20,6 +23,9 @@ export function SessionProvider({ children }) {
     await post('/auth/logout').catch(() => {});
     qc.clear();
     qc.setQueryData(['me'], null);
+
+    navigate('/login');
+
   }, [qc]);
 
   const value = useMemo(() => {

@@ -96,7 +96,21 @@ export function OnboardingPage() {
   const [phone, setPhone] = useState(user.phone || '');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(null);
-  const send = useMutation({ mutationFn: () => post('/auth/phone/send-code', { phone }), onSuccess: setSent, onError: toastError });
+  const send = useMutation({
+     mutationFn: () => post('/auth/phone/send-code', { phone }),
+     onSuccess: (response) => {
+      console.log('Send code response:', response.delivered);
+  
+      if (response.delivered) {
+        setSent(true);
+      }
+      }, 
+      onError: (err)=>{
+        console.log({err})
+        toastError(err)
+      } 
+      // onError: toastError 
+    });
   const verify = useMutation({ mutationFn: () => post('/auth/phone/verify', { code }), onSuccess: () => { refresh(); toast({ tone: 'success', title: 'Phone verified', body: 'Wallet funding, transfers and savings are now unlocked.' }); post('/account/onboarding', { step: 'phone' }).catch(() => {}); }, onError: toastError });
   return (
     <div className="mx-auto max-w-xl space-y-6">
@@ -106,7 +120,7 @@ export function OnboardingPage() {
           <div className="space-y-4">
             <Input label="Phone number" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} hint="We’ll send a 6-digit code via WhatsApp." />
             <Button variant="secondary" loading={send.isPending} onClick={() => send.mutate()}>Send code</Button>
-            {sent && !sent.delivered && <Notice tone="warn">Development mode: the code was captured in the server console and was not actually sent.</Notice>}
+            {/* {sent && <Notice tone="warn">Development mode: the code was captured in the server console and was not actually sent.</Notice>} */}
             {sent && (<><Input label="Code" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} autoComplete="one-time-code" /><Button loading={verify.isPending} disabled={code.length !== 6} onClick={() => verify.mutate()}>Verify phone</Button></>)}
           </div>
         )}

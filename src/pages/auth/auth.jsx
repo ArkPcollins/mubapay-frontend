@@ -120,6 +120,7 @@ export function RegisterPage() {
   }
   const e = reg.error;
   const set = (k) => (ev) => setForm({ ...form, [k]: ev.target.value });
+
   return (
     <AuthCard title="Create your account" subtitle="It takes about two minutes. You can browse straight away; money features unlock as you verify.">
       <GoogleButton onCredential={(credential) => google.mutate({ credential, acceptedPolicies: accepted }, { onSuccess: (r) => (r.user ? nav('/app/onboarding') : null) })} />
